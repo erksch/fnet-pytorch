@@ -1,3 +1,4 @@
+import json
 import os
 
 import torch
@@ -88,6 +89,9 @@ def main(args):
     target = convert(target, jax_tree)
 
     print("Done.")
+
+    with open(os.path.join(args.outdir, 'config.json'), 'w') as f:
+        f.write(json.dumps(config))
 
     torch.save(target.state_dict(), os.path.join(args.outdir, "fnet.statedict.pt"))
     torch.save(target, os.path.join(args.outdir, "fnet.pt"))
