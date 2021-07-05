@@ -102,7 +102,7 @@ class FNet(nn.Module):
         self.encoder = FNetEncoder(config)
         self.pooler = FNetPooler(config)
 
-    def forward(self, input_ids=None):
+    def forward(self, input_ids):
         embedding_output = self.embeddings(input_ids=input_ids)
         sequence_output = self.encoder(embedding_output)
         pooled_output = self.pooler(sequence_output)
