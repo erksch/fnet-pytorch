@@ -1,0 +1,6 @@
+torch>=1.9.0
+
+# dependencies for conversion
+sentencepiece
+flax>=0.3.0
+tensorflow-cpu>=2.5.0
