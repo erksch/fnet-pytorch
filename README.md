@@ -17,7 +17,7 @@ pip install -r requirements.txt
 You can download a pre-trained model from [here](https://drive.google.com/file/d/1HAHEIZDT70gz6hI_u3fN6jD6Rim5rq18/view?usp=sharing).
 The pre-trained model was obtained by converting the official Jax checkpoint of FNet-Base using the technique described below.
 
-You have to options on how to load the pre-trained model:
+You have two options on how to load the pre-trained model:
 
 Option 1: `config.json` & `fnet.statedict.pt`
 
@@ -36,7 +36,7 @@ fnet = torch.load('path/to/fnet.pt')
 
 ## Jax checkpoint conversion
 
-You can download a pre-trained Jax checkpoint of FNet from their [official GitHub page](https://github.com/google-research/google-research/tree/master/f_net#base-models) or use any checkpoint that you trained using the official implementation.  
+Download a pre-trained Jax checkpoint of FNet from their [official GitHub page](https://github.com/google-research/google-research/tree/master/f_net#base-models) or use any checkpoint that you trained using the official implementation.  
 You also need the SentencePiece vocab model. For the official checkpoints, use the model given [here](https://github.com/google-research/google-research/tree/master/f_net#how-to-pre-train-or-fine-tune-fnet). For custom checkpoints use your respective vocab model.
 
 To convert the checkpoint to PyTorch run
