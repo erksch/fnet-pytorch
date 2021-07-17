@@ -15,17 +15,20 @@ class FNetEmbeddings(nn.Module):
         self.hidden_mapping = nn.Linear(config['hidden_size'], config['hidden_size'])
         self.dropout = nn.Dropout(config['hidden_dropout_prob'])
 
-        self.position_ids = torch.arange(config['max_position_embeddings']).expand((1, -1))
+        self.register_buffer(
+            'position_ids',
+            torch.arange(config['max_position_embeddings']).expand((1, -1)),
+            persistent=False
+        )
 
-    def forward(self, input_ids):
+    def forward(self, input_ids, type_ids):
         input_shape = input_ids.size()
         seq_length = input_shape[1]
 
         position_ids = self.position_ids[:, :seq_length]
-        token_type_ids = torch.zeros(input_shape, dtype=torch.long)
 
         word_embeddings = self.word_embeddings(input_ids)
-        token_type_embeddings = self.token_type_embeddings(token_type_ids)
+        token_type_embeddings = self.token_type_embeddings(type_ids)
         position_embeddings = self.position_embeddings(position_ids)
 
         embeddings = word_embeddings + position_embeddings + token_type_embeddings
@@ -102,9 +105,38 @@ class FNet(nn.Module):
         self.encoder = FNetEncoder(config)
         self.pooler = FNetPooler(config)
 
-    def forward(self, input_ids):
-        embedding_output = self.embeddings(input_ids=input_ids)
+    def forward(self, input_ids, type_ids):
+        embedding_output = self.embeddings(input_ids, type_ids)
         sequence_output = self.encoder(embedding_output)
         pooled_output = self.pooler(sequence_output)
 
         return sequence_output, pooled_output
+
+
+class FNetForPreTraining(nn.Module):
+    def __init__(self, config):
+        super(FNetForPreTraining, self).__init__()
+        self.encoder = FNet(config)
+        vocab_size = config['vocab_size']
+        hidden_size = config['hidden_size']
+
+        self.mlm_intermediate = nn.Linear(hidden_size, hidden_size)
+        self.activation = nn.GELU()
+        self.mlm_layer_norm = nn.LayerNorm(hidden_size)
+        self.mlm_output = nn.Linear(hidden_size, vocab_size)
+
+        self.nsp_output = nn.Linear(hidden_size, 2)
+
+    def _mlm(self, x):
+        x = self.mlm_intermediate(x)
+        x = self.activation(x)
+        x = self.mlm_layer_norm(x)
+        x = self.mlm_output(x)
+        return x
+
+    def forward(self, input_ids, type_ids, mlm_positions):
+        sequence_output, pooled_output = self.encoder(input_ids, type_ids)
+        mlm_input = sequence_output.take_along_dim(mlm_positions.unsqueeze(-1), dim=1)
+        mlm_logits = self._mlm(mlm_input)
+        nsp_logits = self.nsp_output(pooled_output)
+        return {"mlm_logits": mlm_logits, "nsp_logits": nsp_logits}
