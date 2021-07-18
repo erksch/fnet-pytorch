@@ -7,7 +7,7 @@ import sentencepiece as spm
 from flax import serialization
 from tensorflow.io import gfile
 
-from fnet import FNetForPreTraining
+from fnet import FNet, FNetForPreTraining
 
 
 def load_jax_checkpoint(path):
@@ -20,41 +20,57 @@ def to_torch(arr):
     return torch.Tensor(arr.copy())
 
 
-def convert(target, jax_tree):
+def save_target(target, outdir, name):
+    torch.save(target.state_dict(), os.path.join(outdir, f"{name}.statedict.pt"))
+    torch.save(target, os.path.join(outdir, f"{name}.pt"))
+
+def convert_encoder(target, jax_tree):
     jax_fnet = jax_tree['target']
     jax_fnet_encoder = jax_fnet['encoder']
     jax_fnet_embedder = jax_fnet_encoder['embedder']
 
-    target.encoder.embeddings.word_embeddings.weight.data = to_torch(jax_fnet_embedder['word']['embedding'])
-    target.encoder.embeddings.position_embeddings.weight.data = to_torch(jax_fnet_embedder['position']['embedding'][0])
-    target.encoder.embeddings.token_type_embeddings.weight.data = to_torch(jax_fnet_embedder['type']['embedding'])
+    target.embeddings.word_embeddings.weight.data = to_torch(jax_fnet_embedder['word']['embedding'])
+    target.embeddings.position_embeddings.weight.data = to_torch(jax_fnet_embedder['position']['embedding'][0])
+    target.embeddings.token_type_embeddings.weight.data = to_torch(jax_fnet_embedder['type']['embedding'])
 
-    target.encoder.embeddings.layer_norm.bias.data = to_torch(jax_fnet_embedder['layer_norm']['bias'])
-    target.encoder.embeddings.layer_norm.weight.data = to_torch(jax_fnet_embedder['layer_norm']['scale'])
+    target.embeddings.layer_norm.bias.data = to_torch(jax_fnet_embedder['layer_norm']['bias'])
+    target.embeddings.layer_norm.weight.data = to_torch(jax_fnet_embedder['layer_norm']['scale'])
 
-    target.encoder.embeddings.hidden_mapping.weight.data = to_torch(jax_fnet_embedder['hidden_mapping_in']['kernel'].T)
-    target.encoder.embeddings.hidden_mapping.bias.data = to_torch(jax_fnet_embedder['hidden_mapping_in']['bias'])
+    target.embeddings.hidden_mapping.weight.data = to_torch(jax_fnet_embedder['hidden_mapping_in']['kernel'].T)
+    target.embeddings.hidden_mapping.bias.data = to_torch(jax_fnet_embedder['hidden_mapping_in']['bias'])
 
     # encoder layer
-    for i in range(len(target.encoder.encoder.layer)):
+    for i in range(len(target.encoder.layer)):
         jax_fnet_encoder_layer = jax_fnet_encoder[f'encoder_{i}']
         jax_fnet_feed_forward = jax_fnet_encoder[f'feed_forward_{i}']
 
-        target.encoder.encoder.layer[i].mixing_layer_norm.weight.data = to_torch(jax_fnet_encoder_layer['mixing_layer_norm']['scale'])
-        target.encoder.encoder.layer[i].mixing_layer_norm.bias.data = to_torch(jax_fnet_encoder_layer['mixing_layer_norm']['bias'])
+        target.encoder.layer[i].mixing_layer_norm.weight.data = to_torch(
+            jax_fnet_encoder_layer['mixing_layer_norm']['scale'])
+        target.encoder.layer[i].mixing_layer_norm.bias.data = to_torch(
+            jax_fnet_encoder_layer['mixing_layer_norm']['bias'])
 
-        target.encoder.encoder.layer[i].feed_forward.weight.data = to_torch(jax_fnet_feed_forward['intermediate']['kernel'].T)
-        target.encoder.encoder.layer[i].feed_forward.bias.data = to_torch(jax_fnet_feed_forward['intermediate']['bias'])
+        target.encoder.layer[i].feed_forward.weight.data = to_torch(jax_fnet_feed_forward['intermediate']['kernel'].T)
+        target.encoder.layer[i].feed_forward.bias.data = to_torch(jax_fnet_feed_forward['intermediate']['bias'])
 
-        target.encoder.encoder.layer[i].output_dense.weight.data = to_torch(jax_fnet_feed_forward['output']['kernel'].T)
-        target.encoder.encoder.layer[i].output_dense.bias.data = to_torch(jax_fnet_feed_forward['output']['bias'])
+        target.encoder.layer[i].output_dense.weight.data = to_torch(jax_fnet_feed_forward['output']['kernel'].T)
+        target.encoder.layer[i].output_dense.bias.data = to_torch(jax_fnet_feed_forward['output']['bias'])
 
-        target.encoder.encoder.layer[i].output_layer_norm.weight.data = to_torch(jax_fnet_encoder_layer['output_layer_norm']['scale'])
-        target.encoder.encoder.layer[i].output_layer_norm.bias.data = to_torch(jax_fnet_encoder_layer['output_layer_norm']['bias'])
+        target.encoder.layer[i].output_layer_norm.weight.data = to_torch(
+            jax_fnet_encoder_layer['output_layer_norm']['scale'])
+        target.encoder.layer[i].output_layer_norm.bias.data = to_torch(
+            jax_fnet_encoder_layer['output_layer_norm']['bias'])
 
     # pooler
-    target.encoder.pooler.dense.weight.data = to_torch(jax_fnet_encoder['pooler']['kernel'].T)
-    target.encoder.pooler.dense.bias.data = to_torch(jax_fnet_encoder['pooler']['bias'])
+    target.pooler.dense.weight.data = to_torch(jax_fnet_encoder['pooler']['kernel'].T)
+    target.pooler.dense.bias.data = to_torch(jax_fnet_encoder['pooler']['bias'])
+
+    return target
+
+
+def convert_for_pretraining(target, jax_tree):
+    jax_fnet = jax_tree['target']
+
+    target.encoder = convert_encoder(target.encoder, jax_tree)
 
     # pre-training head
     target.mlm_intermediate.weight.data = to_torch(jax_fnet['predictions_dense']['kernel'].T)
@@ -63,7 +79,7 @@ def convert(target, jax_tree):
     target.mlm_layer_norm.weight.data = to_torch(jax_fnet['predictions_layer_norm']['scale'])
     target.mlm_layer_norm.bias.data = to_torch(jax_fnet['predictions_layer_norm']['bias'])
 
-    target.mlm_output.weight.data = to_torch(jax_fnet_embedder['word']['embedding'])
+    target.mlm_output.weight.data = to_torch(jax_fnet['encoder']['embedder']['word']['embedding'])
     target.mlm_output.bias.data = to_torch(jax_fnet['predictions_output']['output_bias'])
 
     target.nsp_output.weight.data = to_torch(jax_fnet['classification']['output_kernel'])
@@ -97,18 +113,24 @@ def main(args):
 
     print("Extracted config:", config)
 
-    print("Converting Jax checkpoint...")
-
-    target = FNetForPreTraining(config)
-    target = convert(target, jax_tree)
-
-    print("Done.")
-
     with open(os.path.join(args.outdir, 'config.json'), 'w') as f:
         f.write(json.dumps(config))
 
-    torch.save(target.state_dict(), os.path.join(args.outdir, "fnet.statedict.pt"))
-    torch.save(target, os.path.join(args.outdir, "fnet.pt"))
+    print("Converting Jax checkpoint as base encoder...")
+
+    target = FNet(config)
+    target = convert_encoder(target, jax_tree)
+    save_target(target, args.outdir, "fnet")
+
+    print("Done.")
+
+    print("Converting Jax checkpoint for pretraining...")
+
+    target = FNetForPreTraining(config)
+    target = convert_for_pretraining(target, jax_tree)
+    save_target(target, args.outdir, "fnet_for_pretraining")
+
+    print("Done.")
 
     print(f"Saved PyTorch files to {args.outdir}")
 
