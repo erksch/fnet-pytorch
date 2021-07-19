@@ -16,7 +16,7 @@ def load_jax_checkpoint(path):
         return serialization.msgpack_restore(checkpoint_contents)
 
 
-def to_torch(arr):
+def to_torch(arr) -> torch.Tensor:
     return torch.Tensor(arr.copy())
 
 
@@ -101,6 +101,7 @@ def main(args):
     config = {
         'vocab_size': tokenizer.vocab_size(),
         'hidden_size': encoder['feed_forward_0']['output']['bias'].shape[0],
+        'embedding_size': encoder['embedder']['word']['embedding'].shape[1],
         'intermediate_size': encoder['feed_forward_0']['intermediate']['bias'].shape[0],
         'max_position_embeddings': encoder['embedder']['position']['embedding'].shape[1],
         'pad_token_id': tokenizer.pad_id(),

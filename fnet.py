@@ -6,13 +6,13 @@ from torch import nn
 class FNetEmbeddings(nn.Module):
     def __init__(self, config):
         super().__init__()
-        self.word_embeddings = nn.Embedding(config['vocab_size'], config['hidden_size'],
+        self.word_embeddings = nn.Embedding(config['vocab_size'], config['embedding_size'],
                                             padding_idx=config['pad_token_id'])
-        self.position_embeddings = nn.Embedding(config['max_position_embeddings'], config['hidden_size'])
-        self.token_type_embeddings = nn.Embedding(config['type_vocab_size'], config['hidden_size'])
+        self.position_embeddings = nn.Embedding(config['max_position_embeddings'], config['embedding_size'])
+        self.token_type_embeddings = nn.Embedding(config['type_vocab_size'], config['embedding_size'])
 
-        self.layer_norm = nn.LayerNorm(config['hidden_size'], eps=config['layer_norm_eps'])
-        self.hidden_mapping = nn.Linear(config['hidden_size'], config['hidden_size'])
+        self.layer_norm = nn.LayerNorm(config['embedding_size'], eps=config['layer_norm_eps'])
+        self.hidden_mapping = nn.Linear(config['embedding_size'], config['hidden_size'])
         self.dropout = nn.Dropout(config['hidden_dropout_prob'])
 
         self.register_buffer(
