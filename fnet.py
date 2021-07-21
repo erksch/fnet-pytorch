@@ -1,5 +1,6 @@
 import torch
 import torch.utils.checkpoint
+from scipy import linalg
 from torch import nn
 
 
@@ -40,7 +41,24 @@ class FNetEmbeddings(nn.Module):
         return embeddings
 
 
-class FourierLayer(nn.Module):
+class FourierMMLayer(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+
+        self.dft_mat_seq = torch.tensor(linalg.dft(config['max_position_embeddings']))
+        self.dft_mat_hidden = torch.tensor(linalg.dft(config['hidden_size']))
+
+    def forward(self, hidden_states):
+        hidden_states_complex = hidden_states.type(torch.complex128)
+        return torch.einsum(
+            "...ij,...jk,...ni->...nk",
+            hidden_states_complex,
+            self.dft_mat_hidden,
+            self.dft_mat_seq
+        ).real.type(torch.float32)
+
+
+class FourierFFTLayer(nn.Module):
     def __init__(self):
         super().__init__()
 
@@ -51,7 +69,7 @@ class FourierLayer(nn.Module):
 class FNetLayer(nn.Module):
     def __init__(self, config):
         super().__init__()
-        self.fft = FourierLayer()
+        self.fft = FourierMMLayer() if config['fourier'] == 'matmul' else FourierFFTLayer(config)
         self.mixing_layer_norm = nn.LayerNorm(config['hidden_size'], eps=config['layer_norm_eps'])
         self.feed_forward = nn.Linear(config['hidden_size'], config['intermediate_size'])
         self.output_dense = nn.Linear(config['intermediate_size'], config['hidden_size'])
