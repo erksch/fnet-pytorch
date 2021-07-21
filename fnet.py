@@ -69,7 +69,7 @@ class FourierFFTLayer(nn.Module):
 class FNetLayer(nn.Module):
     def __init__(self, config):
         super().__init__()
-        self.fft = FourierMMLayer() if config['fourier'] == 'matmul' else FourierFFTLayer(config)
+        self.fft = FourierMMLayer(config) if config['fourier'] == 'matmul' else FourierFFTLayer()
         self.mixing_layer_norm = nn.LayerNorm(config['hidden_size'], eps=config['layer_norm_eps'])
         self.feed_forward = nn.Linear(config['hidden_size'], config['intermediate_size'])
         self.output_dense = nn.Linear(config['intermediate_size'], config['hidden_size'])
