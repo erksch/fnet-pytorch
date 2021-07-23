@@ -11,8 +11,8 @@ We offer the following converted checkpoints and pre-trained models
 
 | Model | Jax checkpoint | PyTorch checkpoint | Arch Info | Dataset | Train Info |
 | ----- | ---------------| ------------------- | --- | ---- | ---- |
-| FNet Base | [checkpoint (official)](https://storage.googleapis.com/gresearch/f_net/checkpoints/base/f_net_checkpoint) | [encoder checkpoint (converted)](TODO), [pretraining model checkpoint (converted)](TODO) | E 768, D 768, FF 3072, 12 layers | C4 | see paper / official project |
-| FNet Large | [checkpoint (official)](https://storage.googleapis.com/gresearch/f_net/checkpoints/large/f_net_checkpoint) | [encoder checkpoint (converted)](TODO), [pretraining model checkpoint (converted)](TODO) | E 1024, D 1024, FF 4096, 24 layers | C4 | see paper / official project |
+| FNet Base | [checkpoint (official)](https://storage.googleapis.com/gresearch/f_net/checkpoints/base/f_net_checkpoint) | [checkpoint (converted)](TODO) | E 768, D 768, FF 3072, 12 layers | C4 | see paper / official project |
+| FNet Large | [checkpoint (official)](https://storage.googleapis.com/gresearch/f_net/checkpoints/large/f_net_checkpoint) | [checkpoint (converted)](TODO) | E 1024, D 1024, FF 4096, 24 layers | C4 | see paper / official project |
 | FNet Small | [checkpoint (ours)](TODO) | [encoder checkpoint (converted)](TODO), [pretraining model checkpoint (converted)](TODO) | E 312, D 312, FF 3072, 4 layers | Wikipedia EN | trained with official training code. 1M steps, BS 64, LR 1e-4 |
 
 The PyTorch checkpoints marked with *converted* are converted Jax checkpoints using the technique described below.
@@ -23,18 +23,24 @@ You can install this repository as a package running
 pip install git+https://github.com/erksch/fnet-pytorch
 ```
 
-Now, you can load a pre-trained model in PyTorch as follows.
+Now, you can load a pre-trained model in PyTorch as follows. 
 You'll need the `config.json` and the `.statedict.pt` file.
 
 ```python
 import torch
 import json
-from fnet import FNet
+from fnet import FNet, FNetForPretraining
 
 with open('path/to/config.json', 'r') as f:
     config = json.load(f)
+
+# if you just want the encoder
 fnet = FNet(config)
 fnet.load_state_dict(torch.load('path/to/fnet.statedict.pt'))
+
+# if you want FNet with pre-training head
+fnet = FNetForPretraining(config)
+fnet.load_state_dict(torch.load('path/to/fnet_pretraining.statedict.pt'))
 ```
 
 ## Jax checkpoint conversion
