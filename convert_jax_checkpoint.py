@@ -22,7 +22,7 @@ def to_torch(arr) -> torch.Tensor:
 
 def save_target(target, outdir, name):
     torch.save(target.state_dict(), os.path.join(outdir, f"{name}.statedict.pt"))
-    torch.save(target, os.path.join(outdir, f"{name}.pt"))
+
 
 def convert_encoder(target, jax_tree):
     jax_fnet = jax_tree['target']
@@ -104,7 +104,7 @@ def main(args):
         'embedding_size': encoder['embedder']['word']['embedding'].shape[1],
         'intermediate_size': encoder['feed_forward_0']['intermediate']['bias'].shape[0],
         'max_position_embeddings': encoder['embedder']['position']['embedding'].shape[1],
-	'fourier': 'fft',
+        'fourier': 'fft',
         'pad_token_id': tokenizer.pad_id(),
         'type_vocab_size': 4,
         # https://github.com/google-research/google-research/blob/master/f_net/models.py#L43
@@ -114,6 +114,11 @@ def main(args):
     }
 
     print("Extracted config:", config)
+
+    if not os.path.exists(args.outdir):
+        os.mkdir(args.outdir)
+    if not os.path.isdir(args.outdir):
+        raise Exception(f"{args.outdir} is not a directory")
 
     with open(os.path.join(args.outdir, 'config.json'), 'w') as f:
         f.write(json.dumps(config))
