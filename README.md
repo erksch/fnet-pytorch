@@ -13,7 +13,7 @@ We offer the following converted checkpoints and pre-trained models
 | ----- | ---------------| ------------------- | --- | ---- | ---- |
 | FNet Base | [checkpoint (official)](https://storage.googleapis.com/gresearch/f_net/checkpoints/base/f_net_checkpoint) | [checkpoint (converted)](TODO) | E 768, D 768, FF 3072, 12 layers | C4 | see paper / official project |
 | FNet Large | [checkpoint (official)](https://storage.googleapis.com/gresearch/f_net/checkpoints/large/f_net_checkpoint) | [checkpoint (converted)](TODO) | E 1024, D 1024, FF 4096, 24 layers | C4 | see paper / official project |
-| FNet Small | [checkpoint (ours)](TODO) | [encoder checkpoint (converted)](TODO), [pretraining model checkpoint (converted)](TODO) | E 312, D 312, FF 3072, 4 layers | Wikipedia EN | trained with official training code. 1M steps, BS 64, LR 1e-4 |
+| FNet Small | [checkpoint (ours)](https://drive.google.com/file/d/1Mxnx1qbja0w_2kLDI4pHarSPBS1lFR9u/view?usp=sharing) | [checkpoint (converted)](TODO) | E 312, D 312, FF 3072, 4 layers | Wikipedia EN | trained with official training code. 1M steps, BS 64, LR 1e-4 |
 
 The PyTorch checkpoints marked with *converted* are converted Jax checkpoints using the technique described below.
 
