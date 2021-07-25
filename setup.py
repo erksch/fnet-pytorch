@@ -12,4 +12,5 @@ setup(
     description='PyTorch implementation of Google\'s FNet',
     url='https://github.com/erksch/fnet-pytorch',
     license='MIT License',
+    py_modules=['fnet']
 )
