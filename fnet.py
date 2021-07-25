@@ -139,6 +139,7 @@ class FNetForPreTraining(nn.Module):
         embedding_size = config['embedding_size']
         vocab_size = config['vocab_size']
         hidden_size = config['hidden_size']
+        num_layers = config['num_hidden_layers']
 
         self.mlm_intermediate = nn.Linear(hidden_size, embedding_size)
         self.activation = nn.GELU()
