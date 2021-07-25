@@ -11,8 +11,8 @@ We offer the following converted checkpoints and pre-trained models
 
 | Model | Jax checkpoint | PyTorch checkpoint | Arch Info | Dataset | Train Info |
 | ----- | ---------------| ------------------- | --- | ---- | ---- |
-| FNet Base | [checkpoint (official)](https://storage.googleapis.com/gresearch/f_net/checkpoints/base/f_net_checkpoint) | [checkpoint (converted)](https://voize-checkpoints-public.s3.eu-central-1.amazonaws.com/fnet/pytorch_checkpoints/fnet_large_pt_checkpoint.zip) | E 768, D 768, FF 3072, 12 layers | C4 | see paper / official project |
-| FNet Large | [checkpoint (official)](https://storage.googleapis.com/gresearch/f_net/checkpoints/large/f_net_checkpoint) | [checkpoint (converted)](https://voize-checkpoints-public.s3.eu-central-1.amazonaws.com/fnet/pytorch_checkpoints/fnet_base_pt_checkpoint.zip) | E 1024, D 1024, FF 4096, 24 layers | C4 | see paper / official project |
+| FNet Large | [checkpoint (official)](https://storage.googleapis.com/gresearch/f_net/checkpoints/large/f_net_checkpoint) | [checkpoint (converted)](https://voize-checkpoints-public.s3.eu-central-1.amazonaws.com/fnet/pytorch_checkpoints/fnet_large_pt_checkpoint.zip) | E 1024, D 1024, FF 4096, 24 layers | C4 | see paper / official project |
+| FNet Base | [checkpoint (official)](https://storage.googleapis.com/gresearch/f_net/checkpoints/base/f_net_checkpoint) | [checkpoint (converted)](https://voize-checkpoints-public.s3.eu-central-1.amazonaws.com/fnet/pytorch_checkpoints/fnet_base_pt_checkpoint.zip) | E 768, D 768, FF 3072, 12 layers | C4 | see paper / official project |
 | FNet Small | [checkpoint (ours)](https://voize-checkpoints-public.s3.eu-central-1.amazonaws.com/fnet/jax_checkpoints/fnet_small_jax_checkpoint) | [checkpoint (converted)](https://voize-checkpoints-public.s3.eu-central-1.amazonaws.com/fnet/pytorch_checkpoints/fnet_small_pt_checkpoint.zip) | E 768, D 312, FF 3072, 4 layers | Wikipedia EN | trained with official training code. 1M steps, BS 64, LR 1e-4 |
 
 The PyTorch checkpoints marked with *converted* are converted Jax checkpoints using the technique described below.
