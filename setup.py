@@ -1,8 +1,15 @@
 from setuptools import setup
 
-requirements = []
+requirements = [
+    'torch',
+    'scipy'
+]
 
-setup(name='fnet',
-      version='0.1.0',
-      install_requires=requirements
+setup(
+    name='fnet',
+    version='0.1.0',
+    install_requires=requirements,
+    description='PyTorch implementation of Google\'s FNet',
+    url='https://github.com/erksch/fnet-pytorch',
+    license='MIT License',
 )
