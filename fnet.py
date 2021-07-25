@@ -136,17 +136,17 @@ class FNetForPreTraining(nn.Module):
         super(FNetForPreTraining, self).__init__()
         self.encoder = FNet(config)
 
-        embedding_size = config['embedding_size']
-        vocab_size = config['vocab_size']
-        hidden_size = config['hidden_size']
-        num_layers = config['num_hidden_layers']
+        self.embedding_size = config['embedding_size']
+        self.vocab_size = config['vocab_size']
+        self.hidden_size = config['hidden_size']
+        self.num_layers = config['num_hidden_layers']
 
-        self.mlm_intermediate = nn.Linear(hidden_size, embedding_size)
+        self.mlm_intermediate = nn.Linear(self.hidden_size, self.embedding_size)
         self.activation = nn.GELU()
-        self.mlm_layer_norm = nn.LayerNorm(embedding_size)
-        self.mlm_output = nn.Linear(embedding_size, vocab_size)
+        self.mlm_layer_norm = nn.LayerNorm(self.embedding_size)
+        self.mlm_output = nn.Linear(self.embedding_size, self.vocab_size)
 
-        self.nsp_output = nn.Linear(hidden_size, 2)
+        self.nsp_output = nn.Linear(self.hidden_size, 2)
 
     def _mlm(self, x):
         x = self.mlm_intermediate(x)
