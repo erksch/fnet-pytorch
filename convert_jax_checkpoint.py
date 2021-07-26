@@ -109,7 +109,7 @@ def main(args):
         'pad_token_id': tokenizer.pad_id(),
         # https://github.com/google-research/google-research/blob/master/f_net/models.py#L43
         'layer_norm_eps': 1e-12,
-        'hidden_dropout_prob': 0.1,
+        'dropout_rate': 0.1,
         'num_hidden_layers': num_layers
     }
 
