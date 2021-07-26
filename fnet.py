@@ -14,7 +14,7 @@ class FNetEmbeddings(nn.Module):
 
         self.layer_norm = nn.LayerNorm(config['embedding_size'], eps=config['layer_norm_eps'])
         self.hidden_mapping = nn.Linear(config['embedding_size'], config['hidden_size'])
-        self.dropout = nn.Dropout(config['hidden_dropout_prob'])
+        self.dropout = nn.Dropout(config['dropout_rate'])
 
         self.register_buffer(
             'position_ids',
@@ -74,7 +74,7 @@ class FNetLayer(nn.Module):
         self.feed_forward = nn.Linear(config['hidden_size'], config['intermediate_size'])
         self.output_dense = nn.Linear(config['intermediate_size'], config['hidden_size'])
         self.output_layer_norm = nn.LayerNorm(config['hidden_size'], eps=config['layer_norm_eps'])
-        self.dropout = nn.Dropout(config['dropout_prob'])
+        self.dropout = nn.Dropout(config['dropout_rate'])
         self.activation = nn.GELU()
 
     def forward(self, hidden_states):
