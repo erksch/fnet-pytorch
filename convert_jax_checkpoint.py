@@ -104,7 +104,7 @@ def main(args):
         'embedding_size': encoder['embedder']['word']['embedding'].shape[1],
         'intermediate_size': encoder['feed_forward_0']['intermediate']['bias'].shape[0],
         'max_position_embeddings': encoder['embedder']['position']['embedding'].shape[1],
-        'type_vocab_size': encoder['embedder']['type']['embedding'].shape[1],
+        'type_vocab_size': encoder['embedder']['type']['embedding'].shape[0],
         'fourier': 'fft',
         'pad_token_id': tokenizer.pad_id(),
         # https://github.com/google-research/google-research/blob/master/f_net/models.py#L43
