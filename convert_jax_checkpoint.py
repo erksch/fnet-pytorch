@@ -143,7 +143,7 @@ def main(args):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Converts an FNet Jax checkpoint to a PyTorch statedict.')
     parser.add_argument('--checkpoint', '-c', type=str, required=True, help='path to FNet jax checkpoint')
     parser.add_argument('--vocab', '-v', type=str, required=True, help='path to sentencepiece model')
     parser.add_argument('--outdir', '-o', type=str, required=True, help='dir where to save pytorch exports')
