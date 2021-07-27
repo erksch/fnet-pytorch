@@ -73,10 +73,7 @@ You can use the model type for your needs whether you want to run further pre-tr
 
 Although all model parameters will be correctly transferred to the PyTorch model, there will be slight differences between Jax and PyTorch in the inference result because their LayerNorm and GELU implementations slightly differ.
 
-If you run an example input through both models and compare e.g. the final hidden states they will not be entirely equal. But every float value will be equal up to the 4th digit after the comma (worst case! some float values will be more precisely equal).
-
-Speaking programmatically, if `a` is the Jax FNet last hidden state and `b` is the PyTorch FNet last hidden state of the same input sample or batch `numpy.allclose(a, b, atol=1e-04)` will be `true`.
-
+For a given inference input, all hidden states and logits of the official and converted model are equal at least up the first digit after the comma. This is programmatically verified using the script described below.
 
 ### Verify conversion results
 
