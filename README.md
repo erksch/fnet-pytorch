@@ -67,7 +67,7 @@ Output files: `config.json`, `fnet.statedict.pt`, `fnet_pretraining.statedict.pt
 
 The checkpoints from the official Jax implementation are of complete pre-training models, meaning they contain encoder and pre-training head weights. 
 The conversion will convert the Jax checkpoint to a PyTorch `statedict` of this project's `FNet` module (`fnet.statedict.pt`) and `FNetForPreTraining` module (`fnet_pretraining.statedict.pt`). 
-You can use the model type for your needs whether you want to run further pre-trainings or not. 
+You can use the model type for your needs whether you want to run further pre-trainings or not.
 
 #### Disclaimer
 
@@ -76,3 +76,63 @@ Although all model parameters will be correctly transferred to the PyTorch model
 If you run an example input through both models and compare e.g. the final hidden states they will not be entirely equal. But every float value will be equal up to the 4th digit after the comma (worst case! some float values will be more precisely equal).
 
 Speaking programmatically, if `a` is the Jax FNet last hidden state and `b` is the PyTorch FNet last hidden state of the same input sample or batch `numpy.allclose(a, b, atol=1e-04)` will be `true`.
+
+
+### Verify conversion results
+
+You can use the `verify_conversion.py` script to compare the inference outputs of a Jax checkpoint vs. the converted PyTorch checkpoint.
+But since this requires properly running the Jax FNet it requires a bit of setup and some modifications to the official implementation.
+
+#### Verification Setup
+
+1. Clone the official implementation
+
+```bash
+svn export https://github.com/google-research/google-research/trunk/f_net
+# or
+git clone git@github.com:google-research/google-research.git
+cd google-research/f_net
+```
+
+2. Edit the config in the official implementation to fit the checkpoint you want to run.
+
+3. Add the following to the return value of `_compute_pretraining_metrics` in `models.py`:
+
+```python
+return {
+    ...
+    "masked_lm_logits": masked_lm_logits,
+    "next_sentence_logits": next_sentence_logits
+}
+```
+
+2. Create a `setup.py` file in the parent directory of the `f_net` directory with the following content
+
+```python
+from setuptools import setup
+
+setup(
+    name='fnet_jax',
+    version='0.1.0',
+    install_requires=[],
+    packages=['f_net']
+)
+```
+
+3. Install as a dependency in your `fnet-pytorch` project
+
+```bash
+pip install -e path/to/dir-of-"setup.py"
+```
+
+#### Run the verification script
+
+```bash
+python verify_conversion.py \
+    --jax path/to/jax_checkpoint \
+    --torch path/to/fnet_for_pretraining.statedict.pt \
+    --config path/to/config.json \
+    --vocab path/to/vocab
+```
+
+This should initialize both models from the checkpoints and run inference on a sample text and compare the output logits.
