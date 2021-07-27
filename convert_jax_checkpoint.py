@@ -104,9 +104,9 @@ def main(args):
         'embedding_size': encoder['embedder']['word']['embedding'].shape[1],
         'intermediate_size': encoder['feed_forward_0']['intermediate']['bias'].shape[0],
         'max_position_embeddings': encoder['embedder']['position']['embedding'].shape[1],
+        'type_vocab_size': encoder['embedder']['type']['embedding'].shape[1],
         'fourier': 'fft',
         'pad_token_id': tokenizer.pad_id(),
-        'type_vocab_size': 4,
         # https://github.com/google-research/google-research/blob/master/f_net/models.py#L43
         'layer_norm_eps': 1e-12,
         'dropout_rate': 0.1,
@@ -143,7 +143,7 @@ def main(args):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Converts an FNet Jax checkpoint to a PyTorch statedict.')
     parser.add_argument('--checkpoint', '-c', type=str, required=True, help='path to FNet jax checkpoint')
     parser.add_argument('--vocab', '-v', type=str, required=True, help='path to sentencepiece model')
     parser.add_argument('--outdir', '-o', type=str, required=True, help='dir where to save pytorch exports')
