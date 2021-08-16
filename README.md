@@ -4,18 +4,18 @@ A PyTorch implementation of FNet from the paper _FNet: Mixing Tokens with Fourie
 
 Additional to the architecture implementation, this repository offers a script for converting a checkpoint from the [official FNet implementation](https://github.com/google-research/google-research/tree/master/f_net) (written in Jax) to a PyTorch checkpoint (statedict and or model export).
 
-
 ## Using a pre-trained model
 
 We offer the following converted checkpoints and pre-trained models
 
-| Model | Jax checkpoint | PyTorch checkpoint | Arch Info | Dataset | Train Info |
-| ----- | ---------------| ------------------- | --- | ---- | ---- |
-| FNet Large | [checkpoint (official)](https://storage.googleapis.com/gresearch/f_net/checkpoints/large/f_net_checkpoint) | [checkpoint (converted)](https://voize-checkpoints-public.s3.eu-central-1.amazonaws.com/fnet/pytorch_checkpoints/fnet_large_pt_checkpoint.zip) | E 1024, D 1024, FF 4096, 24 layers | C4 | see paper / official project |
-| FNet Base | [checkpoint (official)](https://storage.googleapis.com/gresearch/f_net/checkpoints/base/f_net_checkpoint) | [checkpoint (converted)](https://voize-checkpoints-public.s3.eu-central-1.amazonaws.com/fnet/pytorch_checkpoints/fnet_base_pt_checkpoint.zip) | E 768, D 768, FF 3072, 12 layers | C4 | see paper / official project |
-| FNet Small | [checkpoint (ours)](https://voize-checkpoints-public.s3.eu-central-1.amazonaws.com/fnet/jax_checkpoints/fnet_small_jax_checkpoint) | [checkpoint (converted)](https://voize-checkpoints-public.s3.eu-central-1.amazonaws.com/fnet/pytorch_checkpoints/fnet_small_pt_checkpoint.zip) | E 768, D 312, FF 3072, 4 layers | Wikipedia EN | trained with official training code. 1M steps, BS 64, LR 1e-4 |
+| Model               | Jax checkpoint                                                                                                                             | PyTorch checkpoint                                                                                                                                     | Arch Info                          | Dataset      | Train Info                                                                                                       |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------- |
+| FNet Large          | [checkpoint (official)](https://storage.googleapis.com/gresearch/f_net/checkpoints/large/f_net_checkpoint)                                 | [checkpoint (converted)](https://voize-checkpoints-public.s3.eu-central-1.amazonaws.com/fnet/pytorch_checkpoints/fnet_large_pt_checkpoint.zip)         | E 1024, D 1024, FF 4096, 24 layers | C4           | see paper / official project                                                                                     |
+| FNet Base           | [checkpoint (official)](https://storage.googleapis.com/gresearch/f_net/checkpoints/base/f_net_checkpoint)                                  | [checkpoint (converted)](https://voize-checkpoints-public.s3.eu-central-1.amazonaws.com/fnet/pytorch_checkpoints/fnet_base_pt_checkpoint.zip)          | E 768, D 768, FF 3072, 12 layers   | C4           | see paper / official project                                                                                     |
+| FNet Small          | [checkpoint (ours)](https://voize-checkpoints-public.s3.eu-central-1.amazonaws.com/fnet/jax_checkpoints/fnet_small_de_250k_jax_checkpoint) | [checkpoint (converted)](https://voize-checkpoints-public.s3.eu-central-1.amazonaws.com/fnet/pytorch_checkpoints/fnet_small_de_250k_pt_checkpoint.zip) | E 768, D 312, FF 3072, 4 layers    | Wikipedia EN | trained with official training code. 1M steps, BS 64, LR 1e-4                                                    |
+| FNet Small (german) | [checkpoint (ours)](https://voize-checkpoints-public.s3.eu-central-1.amazonaws.com/fnet/jax_checkpoints/fnet_small_jax_checkpoint)         | [checkpoint (converted)](https://voize-checkpoints-public.s3.eu-central-1.amazonaws.com/fnet/pytorch_checkpoints/fnet_small_pt_checkpoint.zip)         | E 312, D 312, FF 3072, 4 layers    | Wikipedia DE | trained with official training code, but with word piece tokenizer with custom vocab. 250k steps, BS 64, LR 1e-4 |
 
-The PyTorch checkpoints marked with *converted* are converted Jax checkpoints using the technique described below.
+The PyTorch checkpoints marked with _converted_ are converted Jax checkpoints using the technique described below.
 
 You can install this repository as a package running
 
@@ -23,7 +23,7 @@ You can install this repository as a package running
 pip install git+https://github.com/erksch/fnet-pytorch
 ```
 
-Now, you can load a pre-trained model in PyTorch as follows. 
+Now, you can load a pre-trained model in PyTorch as follows.
 You'll need the `config.json` and the `.statedict.pt` file.
 
 ```python
@@ -65,8 +65,8 @@ python convert_jax_checkpoint.py \
 
 Output files: `config.json`, `fnet.statedict.pt`, `fnet_pretraining.statedict.pt`
 
-The checkpoints from the official Jax implementation are of complete pre-training models, meaning they contain encoder and pre-training head weights. 
-The conversion will convert the Jax checkpoint to a PyTorch `statedict` of this project's `FNet` module (`fnet.statedict.pt`) and `FNetForPreTraining` module (`fnet_pretraining.statedict.pt`). 
+The checkpoints from the official Jax implementation are of complete pre-training models, meaning they contain encoder and pre-training head weights.
+The conversion will convert the Jax checkpoint to a PyTorch `statedict` of this project's `FNet` module (`fnet.statedict.pt`) and `FNetForPreTraining` module (`fnet_pretraining.statedict.pt`).
 You can use the model type for your needs whether you want to run further pre-trainings or not.
 
 #### Disclaimer
