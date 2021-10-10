@@ -43,6 +43,20 @@ fnet = FNetForPretraining(config)
 fnet.load_state_dict(torch.load('path/to/fnet_pretraining.statedict.pt'))
 ```
 
+You can also get the config from only the state dict:
+
+```python
+from fnet import get_config_from_statedict
+
+state_dict = torch.load('path/to/fnet.statedict.pt')
+config = get_config_from_statedict(state_dict)
+fnet = FNet(config)
+fnet.load_state_dict(state_dict)
+```
+
+But not all config values can be inferred from the state dict alone, like dropout rate, fourier layer type and padding token index. 
+`get_config_from_statedict` uses reasonable defaults for them. Look into the implementation to see which parameters are not inferred and how it might affect your use case. 
+
 ## Jax checkpoint conversion
 
 Download a pre-trained Jax checkpoint of FNet from their [official GitHub page](https://github.com/google-research/google-research/tree/master/f_net#base-models) or use any checkpoint that you trained using the official implementation.  

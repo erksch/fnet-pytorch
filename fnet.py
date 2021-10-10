@@ -168,3 +168,27 @@ class FNetForPreTraining(nn.Module):
         mlm_logits = self._mlm(mlm_input)
         nsp_logits = self.nsp_output(pooled_output)
         return {"mlm_logits": mlm_logits, "nsp_logits": nsp_logits}
+
+
+def get_config_from_statedict(state_dict,
+                              fourier_type="fft",
+                              pad_token_id=0,
+                              layer_norm_eps=1e-12,
+                              dropout_rate=0.1):
+    regex = re.compile(r'encoder.encoder.layer.\d+.feed_forward.weight')
+    num_layers = len([key for key in state_dict.keys() if regex.search(key)])
+
+    return {
+        "num_hidden_layers": num_layers,
+        "vocab_size": state_dict['encoder.embeddings.word_embeddings.weight'].shape[0],
+        "embedding_size": state_dict['encoder.embeddings.word_embeddings.weight'].shape[1],
+        "hidden_size": state_dict['encoder.encoder.layer.0.output_dense.weight'].shape[0],
+        "intermediate_size": state_dict['encoder.encoder.layer.0.feed_forward.weight'].shape[0],
+        "max_position_embeddings": state_dict['encoder.embeddings.position_embeddings.weight'].shape[0],
+        "type_vocab_size": state_dict['encoder.embeddings.token_type_embeddings.weight'].shape[0],
+        # the following parameters can not be inferred from the state dict and must be given manually
+        "fourier": fourier_type,
+        "pad_token_id": pad_token_id,
+        "layer_norm_eps": layer_norm_eps,
+        "dropout_rate": dropout_rate,
+    }
