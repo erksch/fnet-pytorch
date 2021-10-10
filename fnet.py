@@ -157,9 +157,14 @@ class FNetForPreTraining(nn.Module):
         x = self.mlm_output(x)
         return x
 
-    def forward(self, input_ids, type_ids, mlm_positions):
+    def forward(self, input_ids, type_ids, mlm_positions=None):
         sequence_output, pooled_output = self.encoder(input_ids, type_ids)
-        mlm_input = sequence_output.take_along_dim(mlm_positions.unsqueeze(-1), dim=1)
+
+        if mlm_positions is not None:
+            mlm_input = sequence_output.take_along_dim(mlm_positions.unsqueeze(-1), dim=1)
+        else:
+            mlm_input = sequence_output
+
         mlm_logits = self._mlm(mlm_input)
         nsp_logits = self.nsp_output(pooled_output)
         return {"mlm_logits": mlm_logits, "nsp_logits": nsp_logits}
