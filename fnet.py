@@ -62,8 +62,9 @@ class FourierFFTLayer(nn.Module):
     def __init__(self):
         super().__init__()
 
+    @torch.cuda.amp.autocast(enabled=False)
     def forward(self, hidden_states):
-        return torch.fft.fft(torch.fft.fft(hidden_states, dim=-1), dim=-2).real
+        return torch.fft.fft(torch.fft.fft(hidden_states.float(), dim=-1), dim=-2).real
 
 
 class FNetLayer(nn.Module):
