@@ -177,14 +177,15 @@ def get_config_from_statedict(state_dict,
                               pad_token_id=0,
                               layer_norm_eps=1e-12,
                               dropout_rate=0.1):
-    regex = re.compile(r'encoder.encoder.layer.\d+.feed_forward.weight')
-    num_layers = len([key for key in state_dict.keys() if regex.search(key)])
     is_pretraining_checkpoint = 'mlm_output.weight' in state_dict.keys()
     
     def prepare(key):
         if is_pretraining_checkpoint: 
             return f"encoder.{key}"
         return key
+
+    regex = re.compile(prepare(r'encoder.layer.\d+.feed_forward.weight'))
+    num_layers = len([key for key in state_dict.keys() if regex.search(key)])
 
     return {
         "num_hidden_layers": num_layers,
