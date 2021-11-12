@@ -179,15 +179,21 @@ def get_config_from_statedict(state_dict,
                               dropout_rate=0.1):
     regex = re.compile(r'encoder.encoder.layer.\d+.feed_forward.weight')
     num_layers = len([key for key in state_dict.keys() if regex.search(key)])
+    is_pretraining_checkpoint = 'mlm_output.weight' in state_dict.keys()
+    
+    def prepare(key):
+        if is_pretraining_checkpoint: 
+            return f"encoder.{key}"
+        return key
 
     return {
         "num_hidden_layers": num_layers,
-        "vocab_size": state_dict['encoder.embeddings.word_embeddings.weight'].shape[0],
-        "embedding_size": state_dict['encoder.embeddings.word_embeddings.weight'].shape[1],
-        "hidden_size": state_dict['encoder.encoder.layer.0.output_dense.weight'].shape[0],
-        "intermediate_size": state_dict['encoder.encoder.layer.0.feed_forward.weight'].shape[0],
-        "max_position_embeddings": state_dict['encoder.embeddings.position_embeddings.weight'].shape[0],
-        "type_vocab_size": state_dict['encoder.embeddings.token_type_embeddings.weight'].shape[0],
+        "vocab_size": state_dict[prepare('embeddings.word_embeddings.weight')].shape[0],
+        "embedding_size": state_dict[prepare('embeddings.word_embeddings.weight')].shape[1],
+        "hidden_size": state_dict[prepare('encoder.layer.0.output_dense.weight')].shape[0],
+        "intermediate_size": state_dict[prepare('encoder.layer.0.feed_forward.weight')].shape[0],
+        "max_position_embeddings": state_dict[prepare('embeddings.position_embeddings.weight')].shape[0],
+        "type_vocab_size": state_dict[prepare('embeddings.token_type_embeddings.weight')].shape[0],
         # the following parameters can not be inferred from the state dict and must be given manually
         "fourier": fourier_type,
         "pad_token_id": pad_token_id,
