@@ -1,5 +1,7 @@
 # FNet PyTorch
 
+![PyPI](https://img.shields.io/pypi/v/fnet-pytorch)
+
 A PyTorch implementation of FNet from the paper _FNet: Mixing Tokens with Fourier Transforms_ by James Lee-Thorp, Joshua Ainslie, Ilya Eckstein, and Santiago Ontanon ([arXiv](https://arxiv.org/abs/2105.03824)).
 
 Additional to the architecture implementation, this repository offers a script for converting a checkpoint from the [official FNet implementation](https://github.com/google-research/google-research/tree/master/f_net) (written in Jax) to a PyTorch checkpoint (statedict and or model export).
@@ -20,7 +22,7 @@ The PyTorch checkpoints marked with _converted_ are converted Jax checkpoints us
 You can install this repository as a package running
 
 ```python
-pip install git+https://github.com/erksch/fnet-pytorch
+pip install fnet-pytorch
 ```
 
 Now, you can load a pre-trained model in PyTorch as follows.
@@ -54,8 +56,8 @@ fnet = FNet(config)
 fnet.load_state_dict(state_dict)
 ```
 
-But not all config values can be inferred from the state dict alone, like dropout rate, fourier layer type and padding token index. 
-`get_config_from_statedict` uses reasonable defaults for them. Look into the implementation to see which parameters are not inferred and how it might affect your use case. 
+But not all config values can be inferred from the state dict alone, like dropout rate, fourier layer type and padding token index.
+`get_config_from_statedict` uses reasonable defaults for them. Look into the implementation to see which parameters are not inferred and how it might affect your use case.
 
 ## Jax checkpoint conversion
 
