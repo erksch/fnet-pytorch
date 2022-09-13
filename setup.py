@@ -6,7 +6,7 @@ requirements = [
 ]
 
 setup(
-    name='fnet',
+    name='fnet-pytorch',
     version='0.1.0',
     install_requires=requirements,
     description='PyTorch implementation of Google\'s FNet',
