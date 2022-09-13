@@ -1,6 +1,6 @@
 # FNet PyTorch
 
-![PyPI](https://img.shields.io/pypi/v/fnet-pytorch)
+[![PyPI](https://img.shields.io/pypi/v/fnet-pytorch?logo=PyPI&color=blue)](https://pypi.org/project/fnet-pytorch)
 
 A PyTorch implementation of FNet from the paper _FNet: Mixing Tokens with Fourier Transforms_ by James Lee-Thorp, Joshua Ainslie, Ilya Eckstein, and Santiago Ontanon ([arXiv](https://arxiv.org/abs/2105.03824)).
 
